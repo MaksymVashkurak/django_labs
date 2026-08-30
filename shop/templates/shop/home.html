@@ -14,7 +14,7 @@
     <h2>Categories</h2>
     <div class="category-grid">
         {% for category in categories %}
-            <a class="category-card" href="{% url 'shop:catalog' %}?category={{ category.slug }}">
+            <a class="category-card" href="{{ category.get_absolute_url }}">
                 <strong>{{ category.name }}</strong>
                 <span>{{ category.description }}</span>
             </a>

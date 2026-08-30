@@ -1,0 +1,22 @@
+{% extends "shop/base.html" %}
+
+{% block content %}
+<section>
+    <div class="product-detail">
+        <div>
+            {% if product.image_url %}
+                <img src="{{ product.image_url }}" alt="{{ product.name }}">
+            {% endif %}
+        </div>
+        <div>
+            <p class="eyebrow">{{ product.category.name }}</p>
+            <h1>{{ product.name }}</h1>
+            <p>{{ product.description }}</p>
+            <p class="price">{{ product.price }} UAH</p>
+            <p>In stock: {{ product.stock }}</p>
+            <button class="button" type="button">Buy</button>
+            <a class="button secondary" href="{{ product.category.get_absolute_url }}">Back to category</a>
+        </div>
+    </div>
+</section>
+{% endblock %}

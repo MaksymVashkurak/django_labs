@@ -5,5 +5,5 @@
     <h3>{{ product.name }}</h3>
     <p>{{ product.description|truncatewords:18 }}</p>
     <p class="price">{{ product.price }} UAH</p>
-    <a class="button" href="{% url 'shop:catalog' %}?category={{ product.category.slug }}">View category</a>
+    <a class="button" href="{{ product.get_absolute_url }}">View product</a>
 </article>

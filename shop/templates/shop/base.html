@@ -160,6 +160,18 @@
             border: 1px solid #bcccdc;
             border-radius: 6px;
         }
+        .product-detail {
+            display: grid;
+            grid-template-columns: minmax(260px, 1fr) minmax(280px, 1fr);
+            gap: 28px;
+            align-items: start;
+        }
+
+        @media (max-width: 760px) {
+            .product-detail {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
 </head>
 <body>
@@ -170,7 +182,7 @@
                 <a href="{% url 'shop:home' %}">Home</a>
                 <a href="{% url 'shop:catalog' %}">Catalog</a>
                 {% for category in nav_categories %}
-                    <a href="{% url 'shop:catalog' %}?category={{ category.slug }}">{{ category.name }}</a>
+                    <a href="{{ category.get_absolute_url }}">{{ category.name }}</a>
                 {% endfor %}
             </nav>
         </div>

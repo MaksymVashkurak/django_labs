@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, render
 
 from .models import Category, Product
 
@@ -49,6 +49,28 @@ def catalog(request):
     }
     context.update(common_context())
     return render(request, "shop/catalog.html", context)
+
+
+def category_detail(request, slug):
+    category = get_object_or_404(Category, slug=slug)
+    products = category.products.filter(is_available=True)
+    context = {
+        "title": category.name,
+        "category": category,
+        "products": products,
+    }
+    context.update(common_context())
+    return render(request, "shop/category_detail.html", context)
+
+
+def product_detail(request, slug):
+    product = get_object_or_404(Product.objects.select_related("category"), slug=slug, is_available=True)
+    context = {
+        "title": product.name,
+        "product": product,
+    }
+    context.update(common_context())
+    return render(request, "shop/product_detail.html", context)
 
 
 def contacts(request):
