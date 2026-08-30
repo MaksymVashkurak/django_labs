@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title|default:"TechStore" }}</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            color: #1f2937;
+            background: #f7fafc;
+        }
+
+        header, footer {
+            background: #102a43;
+            color: white;
+        }
+
+        .container {
+            max-width: 1120px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .nav {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            min-height: 68px;
+        }
+
+        .brand {
+            color: white;
+            font-weight: 700;
+            text-decoration: none;
+            font-size: 22px;
+        }
+
+        .menu {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .menu a, footer a {
+            color: white;
+            text-decoration: none;
+        }
+
+        main {
+            min-height: 72vh;
+        }
+
+        section {
+            padding: 34px 0;
+        }
+
+        .hero {
+            background: #d9e2ec;
+            padding: 64px 20px;
+        }
+
+        .hero > div {
+            max-width: 1120px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 42px;
+            margin: 0 0 12px;
+        }
+
+        h2 {
+            margin: 0 0 20px;
+        }
+
+        .eyebrow {
+            color: #0f766e;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .button {
+            display: inline-block;
+            background: #0f766e;
+            color: white;
+            padding: 10px 16px;
+            border-radius: 6px;
+            text-decoration: none;
+            border: 0;
+            cursor: pointer;
+        }
+
+        .button.secondary {
+            background: #486581;
+        }
+
+        .category-grid, .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 18px;
+        }
+
+        .category-card, .product-card {
+            background: white;
+            border: 1px solid #d9e2ec;
+            border-radius: 8px;
+            padding: 18px;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .category-card span {
+            display: block;
+            margin-top: 8px;
+            color: #52606d;
+        }
+
+        .product-card img, .product-detail img {
+            width: 100%;
+            aspect-ratio: 4 / 3;
+            object-fit: cover;
+            border-radius: 6px;
+            background: #d9e2ec;
+        }
+
+        .price {
+            font-weight: 700;
+            color: #0f766e;
+        }
+
+        .link-row, .filter-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .page {
+            max-width: 760px;
+        }
+
+        footer {
+            margin-top: 40px;
+            padding: 26px 0;
+        }
+
+        form {
+            display: grid;
+            gap: 12px;
+            max-width: 520px;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 10px;
+            border: 1px solid #bcccdc;
+            border-radius: 6px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container nav">
+            <a class="brand" href="{% url 'shop:home' %}">TechStore</a>
+            <nav class="menu">
+                <a href="{% url 'shop:home' %}">Home</a>
+                <a href="{% url 'shop:catalog' %}">Catalog</a>
+                {% for category in nav_categories %}
+                    <a href="{% url 'shop:catalog' %}?category={{ category.slug }}">{{ category.name }}</a>
+                {% endfor %}
+            </nav>
+        </div>
+    </header>
+    <main class="container">
+        {% block content %}{% endblock %}
+    </main>
+    <footer>
+        <div class="container">
+            <p><strong>TechStore</strong> - devices for study, work, and home.</p>
+            <p><a href="{% url 'shop:contacts' %}">Contacts</a> | <a href="{% url 'shop:about' %}">About us</a></p>
+        </div>
+    </footer>
+</body>
+</html>

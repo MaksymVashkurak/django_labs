@@ -1,0 +1,23 @@
+{% extends "shop/base.html" %}
+
+{% block content %}
+<section>
+    <h1>{{ title }}</h1>
+    <div class="filter-row">
+        <a class="button secondary" href="{% url 'shop:catalog' %}">All products</a>
+        {% for category in categories %}
+            <a class="button secondary" href="{% url 'shop:catalog' %}?category={{ category.slug }}">{{ category.name }}</a>
+        {% endfor %}
+    </div>
+</section>
+
+<section>
+    <div class="product-grid">
+        {% for product in products %}
+            {% include "shop/partials/product_card.html" %}
+        {% empty %}
+            <p>No products found.</p>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}
