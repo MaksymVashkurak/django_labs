@@ -46,6 +46,37 @@ class Product(TimeStampedModel):
     def get_absolute_url(self):
         return reverse("shop:product_detail", kwargs={"slug": self.slug})
 
+    @property
+    def average_rating(self):
+        ratings = self.ratings.all()
+        if not ratings:
+            return 0
+        return round(sum(rating.score for rating in ratings) / ratings.count(), 1)
+
+
+class NewsletterSubscription(TimeStampedModel):
+    name = models.CharField(max_length=120)
+    email = models.EmailField(unique=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return self.email
+
+
+class Rating(TimeStampedModel):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="ratings")
+    name = models.CharField(max_length=120)
+    score = models.PositiveSmallIntegerField(choices=[(value, value) for value in range(1, 6)])
+    comment = models.TextField(blank=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return f"{self.product.name}: {self.score}"
+
 
 class Order(TimeStampedModel):
     STATUS_CHOICES = [

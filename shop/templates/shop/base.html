@@ -181,6 +181,7 @@
             <nav class="menu">
                 <a href="{% url 'shop:home' %}">Home</a>
                 <a href="{% url 'shop:catalog' %}">Catalog</a>
+                <a href="{% url 'shop:cart_detail' %}">Cart</a>
                 {% for category in nav_categories %}
                     <a href="{{ category.get_absolute_url }}">{{ category.name }}</a>
                 {% endfor %}
@@ -188,6 +189,13 @@
         </div>
     </header>
     <main class="container">
+        {% if messages %}
+            <section>
+                {% for message in messages %}
+                    <p class="message">{{ message }}</p>
+                {% endfor %}
+            </section>
+        {% endif %}
         {% block content %}{% endblock %}
     </main>
     <footer>

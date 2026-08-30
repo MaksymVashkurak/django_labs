@@ -1,0 +1,23 @@
+{% extends "shop/base.html" %}
+
+{% block content %}
+<section>
+    <h1>Cart</h1>
+    {% if items %}
+        <div class="product-grid">
+            {% for item in items %}
+                <article class="product-card">
+                    <h3>{{ item.product.name }}</h3>
+                    <p>Quantity: {{ item.quantity }}</p>
+                    <p class="price">{{ item.total }} UAH</p>
+                    <a class="button secondary" href="{{ item.product.get_absolute_url }}">Open product</a>
+                </article>
+            {% endfor %}
+        </div>
+        <h2>Total: {{ total }} UAH</h2>
+    {% else %}
+        <p>Your cart is empty.</p>
+    {% endif %}
+    <a class="button" href="{% url 'shop:catalog' %}">Continue shopping</a>
+</section>
+{% endblock %}

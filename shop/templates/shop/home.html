@@ -39,4 +39,13 @@
         {% endfor %}
     </div>
 </section>
+
+<section>
+    <h2>Newsletter</h2>
+    <form action="{% url 'shop:subscribe_newsletter' %}" method="post">
+        {% csrf_token %}
+        {{ newsletter_form.as_p }}
+        <button class="button" type="submit">Subscribe</button>
+    </form>
+</section>
 {% endblock %}

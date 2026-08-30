@@ -14,9 +14,34 @@
             <p>{{ product.description }}</p>
             <p class="price">{{ product.price }} UAH</p>
             <p>In stock: {{ product.stock }}</p>
-            <button class="button" type="button">Buy</button>
+            <p>Average rating: {{ product.average_rating }} / 5</p>
+            <form action="{% url 'shop:add_to_cart' product.id %}" method="post">
+                {% csrf_token %}
+                <button class="button" type="submit">Buy</button>
+            </form>
             <a class="button secondary" href="{{ product.category.get_absolute_url }}">Back to category</a>
         </div>
     </div>
+</section>
+
+<section>
+    <h2>Rate this product</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ rating_form.as_p }}
+        <button class="button" type="submit">Send rating</button>
+    </form>
+</section>
+
+<section>
+    <h2>Latest ratings</h2>
+    {% for rating in ratings %}
+        <article class="product-card">
+            <strong>{{ rating.name }}: {{ rating.score }}/5</strong>
+            <p>{{ rating.comment }}</p>
+        </article>
+    {% empty %}
+        <p>No ratings yet.</p>
+    {% endfor %}
 </section>
 {% endblock %}

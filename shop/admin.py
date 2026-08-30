@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Category, Order, OrderItem, Product
+from .models import Category, NewsletterSubscription, Order, OrderItem, Product, Rating
 
 
 @admin.register(Category)
@@ -29,5 +29,18 @@ class OrderAdmin(admin.ModelAdmin):
     list_filter = ("status", "created_at")
     search_fields = ("customer_name", "email", "phone")
     inlines = [OrderItemInline]
+
+
+@admin.register(NewsletterSubscription)
+class NewsletterSubscriptionAdmin(admin.ModelAdmin):
+    list_display = ("email", "name", "created_at", "updated_at")
+    search_fields = ("email", "name")
+
+
+@admin.register(Rating)
+class RatingAdmin(admin.ModelAdmin):
+    list_display = ("product", "name", "score", "created_at", "updated_at")
+    list_filter = ("score", "created_at")
+    search_fields = ("product__name", "name", "comment")
 
 # Register your models here.
