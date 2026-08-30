@@ -122,4 +122,16 @@ class OrderItem(models.Model):
     def total_price(self):
         return self.price * self.quantity
 
+
+class PasswordResetCode(TimeStampedModel):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="password_reset_codes")
+    code = models.CharField(max_length=6)
+    is_used = models.BooleanField(default=False)
+
+    class Meta:
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return f"Password reset code for {self.user}"
+
 # Create your models here.

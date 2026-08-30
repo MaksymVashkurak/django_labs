@@ -182,6 +182,13 @@
                 <a href="{% url 'shop:home' %}">Home</a>
                 <a href="{% url 'shop:catalog' %}">Catalog</a>
                 <a href="{% url 'shop:cart_detail' %}">Cart</a>
+                {% if user.is_authenticated %}
+                    <a href="{% url 'shop:profile' %}">Profile</a>
+                    <a href="{% url 'shop:logout' %}">Logout</a>
+                {% else %}
+                    <a href="{% url 'shop:login' %}">Login</a>
+                    <a href="{% url 'shop:register' %}">Register</a>
+                {% endif %}
                 {% for category in nav_categories %}
                     <a href="{{ category.get_absolute_url }}">{{ category.name }}</a>
                 {% endfor %}
@@ -201,7 +208,7 @@
     <footer>
         <div class="container">
             <p><strong>TechStore</strong> - devices for study, work, and home.</p>
-            <p><a href="{% url 'shop:contacts' %}">Contacts</a> | <a href="{% url 'shop:about' %}">About us</a></p>
+            <p><a href="{% url 'shop:contacts' %}">Contacts</a> | <a href="{% url 'shop:about' %}">About us</a> | <a href="{% url 'shop:password_reset_request' %}">Change password</a></p>
         </div>
     </footer>
 </body>

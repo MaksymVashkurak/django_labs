@@ -1,8 +1,22 @@
+import random
+
 from django.contrib import messages
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth.models import User
+from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404, redirect, render
 
-from .forms import NewsletterSubscriptionForm, RatingForm
-from .models import Category, Product
+from .forms import (
+    CheckoutForm,
+    NewsletterSubscriptionForm,
+    PasswordResetConfirmForm,
+    PasswordResetRequestForm,
+    RatingForm,
+    RegisterForm,
+)
+from .models import Category, OrderItem, PasswordResetCode, Product
 
 
 def common_context():
@@ -128,6 +142,46 @@ def cart_detail(request):
     return render(request, "shop/cart.html", context)
 
 
+@login_required
+def checkout(request):
+    cart = request.session.get("cart", {})
+    product_ids = [int(product_id) for product_id in cart.keys()]
+    products = Product.objects.filter(id__in=product_ids)
+
+    if request.method == "POST":
+        form = CheckoutForm(request.POST)
+        if form.is_valid() and products:
+            order = form.save(commit=False)
+            order.user = request.user
+            order.save()
+            for product in products:
+                quantity = cart.get(str(product.id), 0)
+                OrderItem.objects.create(
+                    order=order,
+                    product=product,
+                    quantity=quantity,
+                    price=product.price,
+                )
+            request.session["cart"] = {}
+            messages.success(request, "Order created successfully.")
+            return redirect("shop:profile")
+    else:
+        form = CheckoutForm(
+            initial={
+                "customer_name": request.user.get_username(),
+                "email": request.user.email,
+            }
+        )
+
+    context = {
+        "title": "Checkout",
+        "form": form,
+        "has_items": bool(products),
+    }
+    context.update(common_context())
+    return render(request, "shop/checkout.html", context)
+
+
 def subscribe_newsletter(request):
     if request.method == "POST":
         form = NewsletterSubscriptionForm(request.POST)
@@ -137,6 +191,118 @@ def subscribe_newsletter(request):
         else:
             messages.error(request, "Please check newsletter form data.")
     return redirect("shop:home")
+
+
+def register(request):
+    if request.method == "POST":
+        form = RegisterForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)
+            messages.success(request, "Registration completed.")
+            return redirect("shop:profile")
+    else:
+        form = RegisterForm()
+
+    context = {"title": "Register", "form": form}
+    context.update(common_context())
+    return render(request, "shop/auth_form.html", context)
+
+
+def login_view(request):
+    if request.method == "POST":
+        form = AuthenticationForm(request, data=request.POST)
+        if form.is_valid():
+            user = authenticate(
+                request,
+                username=form.cleaned_data["username"],
+                password=form.cleaned_data["password"],
+            )
+            if user is not None:
+                login(request, user)
+                return redirect("shop:profile")
+    else:
+        form = AuthenticationForm()
+
+    context = {"title": "Login", "form": form}
+    context.update(common_context())
+    return render(request, "shop/auth_form.html", context)
+
+
+def logout_view(request):
+    logout(request)
+    return redirect("shop:home")
+
+
+@login_required
+def profile(request):
+    if request.user.is_staff:
+        orders = OrderItem.objects.select_related("order", "product").all()
+        title = "All orders"
+    else:
+        orders = OrderItem.objects.select_related("order", "product").filter(order__user=request.user)
+        title = "My orders"
+
+    context = {
+        "title": "Profile",
+        "orders_title": title,
+        "order_items": orders,
+    }
+    context.update(common_context())
+    return render(request, "shop/profile.html", context)
+
+
+def password_reset_request(request):
+    if request.method == "POST":
+        form = PasswordResetRequestForm(request.POST)
+        if form.is_valid():
+            email = form.cleaned_data["email"]
+            user = User.objects.filter(email=email).first()
+            if user:
+                code = f"{random.randint(100000, 999999)}"
+                PasswordResetCode.objects.create(user=user, code=code)
+                send_mail(
+                    "TechStore password reset",
+                    f"Your temporary password reset code is: {code}",
+                    "noreply@techstore.local",
+                    [email],
+                )
+            messages.success(request, "If this email exists, a reset code was sent.")
+            return redirect("shop:password_reset_confirm")
+    else:
+        form = PasswordResetRequestForm()
+
+    context = {"title": "Password reset", "form": form}
+    context.update(common_context())
+    return render(request, "shop/auth_form.html", context)
+
+
+def password_reset_confirm(request):
+    if request.method == "POST":
+        form = PasswordResetConfirmForm(request.POST)
+        if form.is_valid():
+            email = form.cleaned_data["email"]
+            code = form.cleaned_data["code"]
+            reset_code = PasswordResetCode.objects.filter(
+                user__email=email,
+                code=code,
+                is_used=False,
+            ).select_related("user").first()
+
+            if reset_code:
+                reset_code.user.set_password(form.cleaned_data["new_password"])
+                reset_code.user.save()
+                reset_code.is_used = True
+                reset_code.save()
+                messages.success(request, "Password changed successfully.")
+                return redirect("shop:login")
+            messages.error(request, "Invalid reset code.")
+    else:
+        form = PasswordResetConfirmForm()
+
+    context = {"title": "Confirm password reset", "form": form}
+    context.update(common_context())
+    return render(request, "shop/auth_form.html", context)
 
 
 def contacts(request):

@@ -1,0 +1,28 @@
+{% extends "shop/base.html" %}
+
+{% block content %}
+<section>
+    <h1>Personal cabinet</h1>
+    <p>Welcome, {{ user.username }}.</p>
+</section>
+
+<section>
+    <h2>{{ orders_title }}</h2>
+    {% if order_items %}
+        <div class="product-grid">
+            {% for item in order_items %}
+                <article class="product-card">
+                    <h3>{{ item.product.name }}</h3>
+                    <p>Order: #{{ item.order.id }}</p>
+                    <p>Customer: {{ item.order.customer_name }}</p>
+                    <p>Status: {{ item.order.get_status_display }}</p>
+                    <p>Quantity: {{ item.quantity }}</p>
+                    <p class="price">{{ item.total_price }} UAH</p>
+                </article>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p>No orders yet.</p>
+    {% endif %}
+</section>
+{% endblock %}

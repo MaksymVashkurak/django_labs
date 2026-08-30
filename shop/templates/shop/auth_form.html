@@ -1,0 +1,15 @@
+{% extends "shop/base.html" %}
+
+{% block content %}
+<section class="page">
+    <h1>{{ title }}</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button class="button" type="submit">{{ title }}</button>
+    </form>
+    {% if title == "Login" %}
+        <p><a href="{% url 'shop:password_reset_request' %}">Change password</a></p>
+    {% endif %}
+</section>
+{% endblock %}

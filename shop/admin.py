@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Category, NewsletterSubscription, Order, OrderItem, Product, Rating
+from .models import Category, NewsletterSubscription, Order, OrderItem, PasswordResetCode, Product, Rating
 
 
 @admin.register(Category)
@@ -42,5 +42,12 @@ class RatingAdmin(admin.ModelAdmin):
     list_display = ("product", "name", "score", "created_at", "updated_at")
     list_filter = ("score", "created_at")
     search_fields = ("product__name", "name", "comment")
+
+
+@admin.register(PasswordResetCode)
+class PasswordResetCodeAdmin(admin.ModelAdmin):
+    list_display = ("user", "code", "is_used", "created_at", "updated_at")
+    list_filter = ("is_used", "created_at")
+    search_fields = ("user__username", "user__email", "code")
 
 # Register your models here.

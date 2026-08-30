@@ -1,0 +1,17 @@
+{% extends "shop/base.html" %}
+
+{% block content %}
+<section class="page">
+    <h1>Checkout</h1>
+    {% if has_items %}
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button class="button" type="submit">Create order</button>
+        </form>
+    {% else %}
+        <p>Your cart is empty.</p>
+        <a class="button" href="{% url 'shop:catalog' %}">Go to catalog</a>
+    {% endif %}
+</section>
+{% endblock %}
